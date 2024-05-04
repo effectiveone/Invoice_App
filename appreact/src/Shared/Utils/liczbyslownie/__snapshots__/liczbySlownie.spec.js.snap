@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`liczbySlownie konwertuje poprawnie liczby całkowite do 999 1`] = `"zero złotych"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby całkowite do 999 2`] = `"pięć złotych"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby całkowite do 999 3`] = `"dziesięć złotych"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby całkowite do 999 4`] = `"jedenaście złotych"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby całkowite do 999 5`] = `"piętnaście złotych"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby całkowite do 999 6`] = `"dwadzieścia złotych"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby całkowite do 999 7`] = `"dwadzieścia pięć złotych"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby całkowite do 999 8`] = `"dziewięćdziesiąt dziewięć złotych"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby całkowite do 999 9`] = `"sto złotych"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby całkowite do 999 10`] = `"sto dwadzieścia trzy złote"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby całkowite do 999 11`] = `"dziewięćset dziewięćdziesiąt dziewięć złotych"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby do 1000 1`] = `""`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby do 1000 2`] = `"sto undefined"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby do 1000 3`] = `"dwieście undefined"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby do 1000 4`] = `"sto"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby do 1000 5`] = `"sto pięćdziesiąt"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby do 1000 6`] = `"dwieście"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby do 1000 7`] = `"pięćset"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby do 1000 8`] = `"sto"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby do 1000 9`] = `"dwieście"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby do 1000 10`] = `"pięćset"`;
+
+exports[`liczbySlownie konwertuje poprawnie liczby do 1000 11`] = `"sto undefined tysiąc"`;
+
+exports[`liczbySlownie liczbySlownie konwertuje poprawnie liczby do 1000 1`] = `"zero"`;
+
+exports[`liczbySlownie liczbySlownie konwertuje poprawnie liczby do 1000 2`] = `" jeden"`;
+
+exports[`liczbySlownie liczbySlownie konwertuje poprawnie liczby do 1000 3`] = `" dwa"`;
+
+exports[`liczbySlownie liczbySlownie konwertuje poprawnie liczby do 1000 4`] = `" dziesięć"`;
+
+exports[`liczbySlownie liczbySlownie konwertuje poprawnie liczby do 1000 5`] = `" piętnaście"`;
+
+exports[`liczbySlownie liczbySlownie konwertuje poprawnie liczby do 1000 6`] = `" dwadzieścia"`;
+
+exports[`liczbySlownie liczbySlownie konwertuje poprawnie liczby do 1000 7`] = `" pięćdziesiąt"`;
+
+exports[`liczbySlownie liczbySlownie konwertuje poprawnie liczby do 1000 8`] = `" sto"`;
+
+exports[`liczbySlownie liczbySlownie konwertuje poprawnie liczby do 1000 9`] = `" dwieście"`;
+
+exports[`liczbySlownie liczbySlownie konwertuje poprawnie liczby do 1000 10`] = `" pięćset"`;
+
+exports[`liczbySlownie liczbySlownie konwertuje poprawnie liczby do 1000 11`] = `" jeden tysiąc"`;

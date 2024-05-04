@@ -1,38 +1,57 @@
+import React from 'react';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
+import LoginPage from './Auth/LoginPage/LoginPage.js';
+import RegisterPage from './Auth/RegisterPage/RegisterPage.js';
+import IssuedInvoicePage from './Pages/IssuedInvoicePage.js';
+import MyCompanyPage from './Pages/MyCompanyPage.js';
+import DashboardPage from './Pages/DashboardPage.js';
+
+import NewInvoicePage from './Pages/NewInvoicePage.js';
+import InventoryPage from './Pages/InventoryPage.js';
+import KontrahentPage from './Pages/KontrahentPage.js';
+import SettingsPage from './Pages/SettingsPage.js';
+import { useUser } from './Shared/Hook/useUser.js';
+import AlertNotification from './Shared/Components/AlertNotification.js';
 import './App.css';
-import HeaderApp from './component/header';
-import FooterApp from './component/footer';
-import Login from './component/login';
-import UserList from './component/userlist';
-import React from 'react'
-import "antd/dist/antd.css";
-import { Layout, Breadcrumb } from "antd";
-const { Content} = Layout;
-
-
 
 function App() {
-
+  const { currentUser } = useUser();
 
   return (
-    <Layout className="layout">
-    <HeaderApp/>
-    <Content style={{ padding: "0 50px" }}>
-      <Breadcrumb style={{ margin: "16px 0" }}>
-        <Breadcrumb.Item>Home</Breadcrumb.Item>
-        <Breadcrumb.Item>One</Breadcrumb.Item>
-        <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
-      </Breadcrumb>
-      <div style={{ background: "#fff", padding: 24, minHeight: 280 }}>
-        <p>Basic Starter Layout</p>
-
-        <Login/>
-        <UserList/>
-      </div>
-    </Content>
-
-<FooterApp/>
-   
-  </Layout>
+    <>
+      <Router>
+        <Routes>
+          <Route path='/login' element={<LoginPage />} />
+          <Route path='/register' element={<RegisterPage />} />
+          {currentUser ? (
+            <>
+              <Route path='/Dashboard' element={<DashboardPage />} />
+              <Route path='/Inventory' element={<InventoryPage />} />
+              <Route path='/InvoicesIssued' element={<IssuedInvoicePage />} />
+              <Route path='/NewInvoice' element={<NewInvoicePage />} />
+              <Route path='/Kontrahent' element={<KontrahentPage />} />
+              <Route path='/SettingsPage' element={<SettingsPage />} />
+              <Route path='/Mycompany' element={<MyCompanyPage />} />
+              <Route path='/' element={<Navigate to='/SettingsPage' />} />
+            </>
+          ) : (
+            <Route path='/' element={<LoginPage />} />
+          )}
+          <Route
+            path='/'
+            element={
+              currentUser ? <Navigate to='/SettingsPage' /> : <LoginPage />
+            }
+          />
+        </Routes>
+      </Router>
+      <AlertNotification />
+    </>
   );
 }
 

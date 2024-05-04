@@ -1,85 +1,40 @@
-#Docker yml setup for react, php, node, mysql and nginx 
+ <h1 align="center">MangoDb, Express, React, Node, Material UI, SASS, Redux, Jest, React Testing Library, Prettier, esLint, Boilerplate</h1>
 
-### GET STARTED
+## Invoice App
 
-#### Git Clone
-```
-git clone https://github.com/pompy/react_php_node_mysql_nginx_setup
-```
-#### Make sure docker, docker-compose is installed
-Installations depends on whether your os is based on windows or linux distribution
+The Invoice App is a comprehensive application designed to facilitate the process of generating invoices for registered users. It offers a range of features aimed at streamlining invoicing procedures and maintaining organized records. Users have the capability to manage a database of clients, including their contact information and billing details. Additionally, the application allows users to maintain a catalog of products or services offered, complete with descriptions and pricing.
 
-#### Docker Compose Up/Build
+One of the key functionalities of the Invoice App is its ability to create and manage invoices efficiently. Users can easily generate new invoices, add line items for products or services provided, specify quantities, and calculate totals. The app also maintains a centralized list of all issued invoices, providing users with quick access to past transactions.
 
-```
-// create and start containers
-docker-compose up
+Furthermore, the Invoice App offers robust editing capabilities, allowing users to modify specific details within issued invoices. Whether it's updating client information, adjusting line item descriptions, or revising pricing, users can make necessary changes with ease.
 
-docker-compose build
-```
+Overall, the Invoice App serves as a comprehensive tool for invoice management, empowering users to create, maintain, and edit invoices in a user-friendly and efficient manner.
 
-#### Docker Compose other handy command
+## Getting Started
 
-```
-// create and start containers
-docker-compose up
-// start services with detached mode
-docker-compose -d up
-// start specific service
-docker-compose up <service-name>
-// list images
-docker-compose images
-// list containers
-docker-compose ps
-// start service
-docker-compose start
-// stop services
-docker-compose stop
-// display running containers
-docker-compose top
-// kill services
-docker-compose kill
-// remove stopped containers
-docker-compose rm
-// stop all contaners and remove images, volumes
-docker-compose down
+To run the application using Docker, follow these steps:
+
+1. **Install Docker and Docker Compose:**
+   Make sure you have Docker and Docker Compose installed on your machine.
+
+2. **Clone the repository:**
+   Clone the repository to your local environment:
+   ```bash
+   git clone [repository_url]
+   cd [repository_name]
+   ```
+
+- **Build and run the application using Docker Compose:**
+  In the project directory containing the `docker-compose.yml` file, run the following command:
+
+```bash
+docker-compose up -d --build
 ```
 
-#### Placement of files
+his command will build Docker images and start containers as per the configuration in the docker-compose.yml file.
 
-##### PHP
-```
-app/public/public
-Place your php files. You can install laravel here if you want to.
-You can place adminer file to open mysql admin.
-```
-Access   
-<http://localhost:81/api.php>   
-<http://localhost:81/test.php>   
+Now, your application should be running in Docker containers, with the frontend and backend operating on their respective ports. Open a web browser and check localhost:3000 for the frontend and the specified address for the backend.
 
+## History of commits.
 
-##### NODE.js
-```
-appnode/
-All node js modules and files
-```
-
-Access   
-<http://localhost:5000/api>   
-<http://localhost:5000/>   
-
-##### Reactjs
-```
-appreact/
-Place your reactjs  files here
-```
-
-Access   
-<http://localhost:3000/>   
-You will reactjs code local api is consumed.   
-
->   Port Specifications:   
->   81 - PHP   
->   5000 - Nodejs   
->   3000 - Reactjs   
->   3306 - Mysql   
+"The Invoice App is a revitalized project aimed at enhancing the functionality of an existing application. Previously comprised of separate frontend and backend components, the project has been revitalized with the integration of Docker for improved containerization and deployment processes. The frontend component, accessible at [\[link to frontend GitHub repository\]](https://github.com/effectiveone/InvoiceApp-Frontend), and the backend component, accessible at [\[link to backend GitHub repository\]](https://github.com/effectiveone/InvoiceApp-backend), provide a glimpse into the project's earlier iterations.

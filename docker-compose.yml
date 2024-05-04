@@ -1,65 +1,45 @@
 version: '3'
+
 services:
-    web:
-        image: nginx:1.19
-        ports:
-            - "81:80"
-        volumes:
-            - ./nginx.conf:/etc/nginx/conf.d/default.conf
-            - ./app:/app
-        container_name: pompy_v2_web
-        networks:
-          - pompy-network
-    php:
-        build:
-            context: .
-            dockerfile: PHP.DOCKERFILE
-        volumes:
-            - ./app:/app
-        container_name: pompy_v2_php
-        networks:
-          - pompy-network
-    node:
-        build:
-            context: .
-            dockerfile: NODE.DOCKERFILE
-        volumes:
-            - ./appnode:/appnode
-            -  /appnode/node_modules
-        ports: 
-          - 5000:5000
-        networks:
-          - pompy-network    
-    frontend:
-        build:
-            context: .
-            dockerfile: FRONT.DOCKERFILE
-        environment:
-            WATCHPACK_POLLING : "true"
-        container_name: pompy_v2_react
-        ports:
-            - 3000:3000          
-        volumes:
-            - ./appreact:/appreact
-            - /appreact/node_modules
-        networks:
-          - pompy-network
-    mysql:
-        image: mariadb:10.7.3
-        environment:
-            MYSQL_ROOT_PASSWORD: 'admin'
-            MYSQL_USER: 'admin'
-            MYSQL_PASSWORD: 'admin'
-            MYSQL_DATABASE: 'mydb'
-        volumes:
-            - mysqldata:/var/lib/mysql
-        ports:
-            - 3306:3306
-        container_name: pompy_v2_mysql
-        networks:
-          - pompy-network
-networks: 
-    pompy-network:
-      driver: bridge
+  node:
+    build:
+      context: .
+      dockerfile: NODE.DOCKERFILE
+    volumes:
+      - ./appnode:/appnode
+      - /appnode/node_modules
+    ports:
+      - 5002:5002
+    networks:
+      - invoice-network
+
+  frontend:
+    container_name: invoice_v2_react
+    build:
+      context: .
+      dockerfile: FRONT.DOCKERFILE
+    environment:
+      WATCHPACK_POLLING: 'true'
+    ports:
+      - 3000:3000
+    # volumes:
+    #   - ./appreact:/appreact
+    networks:
+      - invoice-network
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/db:/data/db
+      - ./init.js:/docker-entrypoint-initdb.d/init.js:ro
+    networks:
+      - invoice-network
+
+networks:
+  invoice-network:
+    driver: bridge
+
 volumes:
-    mysqldata: {}
+  mysqldata: {}

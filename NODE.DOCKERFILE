@@ -1,6 +1,10 @@
-FROM node:alpine
+FROM node:14
 WORKDIR "/appnode"
 COPY ./appnode/package.json ./
-RUN npm install
+RUN yarn install
 COPY ./appnode/ .
-CMD ["npm", "run", "start.dev"]
+ENV API_PORT=5002
+ENV MONGO_URI=mongodb://mongodb:27017/InvoiceApp
+ENV TOKEN_KEY=hereShouldGoStrongTokenKey
+
+CMD ["yarn", "start"]

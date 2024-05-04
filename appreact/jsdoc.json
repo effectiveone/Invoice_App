@@ -1,0 +1,12 @@
+{
+  "source": {
+    "include": ["src"],
+    "exclude": ["src/__tests__"]
+  },
+  "plugins": ["plugins/markdown"],
+  "opts": {
+    "template": "node_modules/@systematize/jsdoc-template",
+    "recurse": true,
+    "destination": "docs/"
+  }
+}
