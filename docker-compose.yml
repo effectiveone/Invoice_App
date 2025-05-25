@@ -20,10 +20,12 @@ services:
       dockerfile: FRONT.DOCKERFILE
     environment:
       WATCHPACK_POLLING: 'true'
+      WDS_SOCKET_PORT: '3001'
     ports:
-      - 3000:3000
-    # volumes:
-    #   - ./appreact:/appreact
+      - 3001:3000
+    volumes:
+      - ./appreact:/appreact
+      - /appreact/node_modules
     networks:
       - invoice-network
 
