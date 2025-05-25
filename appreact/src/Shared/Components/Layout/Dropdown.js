@@ -1,47 +1,52 @@
-import React from "react";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import { makeStyles } from "@material-ui/core/styles";
-import { t } from "i18next";
+import React from 'react';
+import { MenuItem, Menu } from '@mui/material';
+import { styled } from '@mui/system';
+import { useTranslation } from 'react-i18next';
 
-const useStyles = makeStyles({
-  menu: {
-    display: "flex",
-    flexDirection: "column",
+const StyledMenu = styled(Menu)(({ theme }) => ({
+  '& .MuiPaper-root': {
+    borderRadius: '12px',
+    background: 'rgba(255, 255, 255, 0.95)',
+    backdropFilter: 'blur(20px)',
+    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    marginTop: '8px',
   },
-  coinContainer: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    alignItems: "center",
+}));
+
+const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
+  borderRadius: '8px',
+  margin: '4px',
+  padding: '12px 16px',
+  fontWeight: '500',
+  color: '#374151',
+  '&:hover': {
+    background: 'rgba(102, 126, 234, 0.1)',
+    color: '#667eea',
   },
-  currentUser: {
-    transform: "translateX(10%)",
-  },
-});
+}));
 
 function Dropdown({ handleLogout, open, id, anchorEl, handleClose }) {
-  const classes = useStyles();
+  const { t } = useTranslation();
 
   return (
-    <Menu
+    <StyledMenu
       id={id}
       anchorEl={anchorEl}
       keepMounted
       open={open}
       onClose={handleClose}
-      PaperProps={{ square: true }}
       anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "center",
+        vertical: 'bottom',
+        horizontal: 'center',
       }}
       transformOrigin={{
-        vertical: "top",
-        horizontal: "center",
+        vertical: 'top',
+        horizontal: 'center',
       }}
-      className={classes.menu}
     >
-      <MenuItem onClick={handleLogout}>{t("logout")}</MenuItem>
-    </Menu>
+      <StyledMenuItem onClick={handleLogout}>{t('logout')}</StyledMenuItem>
+    </StyledMenu>
   );
 }
 

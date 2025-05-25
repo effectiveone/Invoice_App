@@ -41,4 +41,11 @@ module.exports = {
   resolve: {
     extensions: ['.js'], // Dodaj tylko rozszerzenie '.js'
   },
+  devServer: {
+    port: 3001,
+    host: '0.0.0.0',
+    client: {
+      webSocketURL: 'ws://localhost:3001/ws',
+    },
+  },
 };

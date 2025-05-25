@@ -1,105 +1,215 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { sanitizedUrl } from "../../Utils/api";
-import { makeStyles } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
-import ListIcon from "@material-ui/icons/List";
-import BusinessIcon from "@material-ui/icons/Business";
-import SettingsIcon from "@material-ui/icons/Settings";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import { t } from "i18next";
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { sanitizedUrl } from '../../Utils/api';
+import { styled } from '@mui/material/styles';
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Box,
+  Typography,
+  Avatar,
+} from '@mui/material';
+import {
+  Dashboard,
+  Receipt,
+  Inventory,
+  People,
+  Business,
+  Settings,
+  AddCircle,
+} from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
+import { useLanguageListener } from '../../Hook/useLanguageListener';
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-  },
-  drawer: {
+const StyledDrawer = styled(Drawer)(({ theme }) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  '& .MuiDrawer-paper': {
     width: drawerWidth,
-    flexShrink: 0,
+    background:
+      theme.customTheme?.gradient ||
+      `linear-gradient(180deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+    color: theme.palette.primary.contrastText || 'white',
+    border: 'none',
+    boxShadow: '4px 0 20px rgba(0, 0, 0, 0.15)',
+    zIndex: 1200,
+    transition: 'background 0.3s ease',
   },
-  drawerPaper: {
-    width: drawerWidth,
-    backgroundColor: theme.palette.background.default,
-    color: theme.palette.text.primary,
+}));
+
+const LogoSection = styled(Box)(({ theme }) => ({
+  padding: '24px 20px',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+  marginBottom: '16px',
+}));
+
+const StyledListItem = styled(ListItem)(({ theme, active }) => ({
+  margin: '4px 12px',
+  borderRadius: '12px',
+  background: active ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
+  backdropFilter: active ? 'blur(10px)' : 'none',
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    background: 'rgba(255, 255, 255, 0.1)',
+    transform: 'translateX(4px)',
   },
-  toolbar: theme.mixins.toolbar,
+  '& .MuiListItemIcon-root': {
+    color: 'white',
+    minWidth: '40px',
+  },
+  '& .MuiListItemText-primary': {
+    fontWeight: active ? '600' : '500',
+    fontSize: '14px',
+  },
+}));
+
+const SectionTitle = styled(Typography)(({ theme }) => ({
+  padding: '16px 24px 8px 24px',
+  fontSize: '12px',
+  fontWeight: '600',
+  textTransform: 'uppercase',
+  letterSpacing: '1px',
+  opacity: 0.7,
+}));
+
+const MainContent = styled('main')(({ theme }) => ({
+  flexGrow: 1,
+  marginLeft: drawerWidth,
+  minHeight: '100vh',
+  transition: 'margin 0.3s ease',
 }));
 
 const PermanentDrawer = ({ children }) => {
-  const classes = useStyles();
+  const location = useLocation();
+  const { t } = useTranslation();
+
+  // 🔥 Hook który wymusza re-render przy zmianie języka
+  const { currentLanguage } = useLanguageListener();
+
+  const menuItems = [
+    {
+      section: 'Główne',
+      items: [
+        {
+          path: sanitizedUrl.MainPage,
+          label: t('dashboardPage'),
+          icon: <Dashboard />,
+        },
+        {
+          path: sanitizedUrl.AllInvoices,
+          label: t('newInvoice'),
+          icon: <AddCircle />,
+        },
+        {
+          path: sanitizedUrl.Dashboard,
+          label: t('allInvoice'),
+          icon: <Receipt />,
+        },
+      ],
+    },
+    {
+      section: 'Zarządzanie',
+      items: [
+        {
+          path: sanitizedUrl.Inventory,
+          label: t('inventory'),
+          icon: <Inventory />,
+        },
+        {
+          path: sanitizedUrl.Kontrahent,
+          label: t('contrahent'),
+          icon: <People />,
+        },
+        {
+          path: sanitizedUrl.MyCompany,
+          label: t('myCompany'),
+          icon: <Business />,
+        },
+      ],
+    },
+    {
+      section: 'Konfiguracja',
+      items: [
+        {
+          path: sanitizedUrl.Settings,
+          label: t('settings'),
+          icon: <Settings />,
+        },
+      ],
+    },
+  ];
 
   return (
-    <div className={classes.root} data-testid="permanent-drawer">
-      <Drawer
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-        anchor="left"
-      >
-        <Toolbar />
-        <div className={classes.toolbar} />
-        <Divider />
-        <List>
-          <ListItem button component={Link} to={sanitizedUrl.MainPage}>
-            <ListItemIcon>
-              <AddCircleOutlineIcon />
-            </ListItemIcon>
-            <ListItemText primary={t("dashboardPage")} />
-          </ListItem>
-          <ListItem button component={Link} to={sanitizedUrl.AllInvoices}>
-            <ListItemIcon>
-              <AddCircleOutlineIcon />
-            </ListItemIcon>
-            <ListItemText primary={t("newInvoice")} />
-          </ListItem>
-          <ListItem button component={Link} to={sanitizedUrl.Dashboard}>
-            <ListItemIcon>
-              <ListIcon />
-            </ListItemIcon>
-            <ListItemText primary={t("allInvoice")} />
-          </ListItem>
+    <Box sx={{ display: 'flex' }} data-testid='permanent-drawer'>
+      <StyledDrawer variant='permanent' anchor='left'>
+        <LogoSection>
+          <Avatar
+            sx={{
+              background: 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              width: 40,
+              height: 40,
+            }}
+          >
+            <Receipt />
+          </Avatar>
+          <Box>
+            <Typography
+              variant='h6'
+              sx={{ fontWeight: 'bold', fontSize: '18px' }}
+            >
+              InvoiceApp
+            </Typography>
+            <Typography
+              variant='caption'
+              sx={{ opacity: 0.8, fontSize: '12px' }}
+            >
+              System fakturowania
+            </Typography>
+          </Box>
+        </LogoSection>
 
-          <ListItem button component={Link} to={sanitizedUrl.Inventory}>
-            <ListItemIcon>
-              <BusinessIcon />
-            </ListItemIcon>
-            <ListItemText primary={t("inventory")} />
-          </ListItem>
-          <ListItem button component={Link} to={sanitizedUrl.Kontrahent}>
-            <ListItemIcon>
-              <ListIcon />
-            </ListItemIcon>
-            <ListItemText primary={t("contrahent")} />
-          </ListItem>
-          <ListItem button component={Link} to={sanitizedUrl.MyCompany}>
-            <ListItemIcon>
-              <BusinessIcon />
-            </ListItemIcon>
-            <ListItemText primary={t("myCompany")} />
-          </ListItem>
-        </List>
-        <Divider />
-        <List>
-          <ListItem button component={Link} to={sanitizedUrl.Settings}>
-            <ListItemIcon>
-              <SettingsIcon />
-            </ListItemIcon>
-            <ListItemText primary={t("settings")} />
-          </ListItem>
-        </List>
-      </Drawer>
-      <main>{children}</main>
-    </div>
+        {menuItems.map((section, sectionIndex) => (
+          <Box key={`${sectionIndex}-${currentLanguage}`}>
+            <SectionTitle>{section.section}</SectionTitle>
+            <List sx={{ padding: 0 }}>
+              {section.items.map((item, index) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <StyledListItem
+                    key={`${index}-${currentLanguage}`}
+                    component={Link}
+                    to={item.path}
+                    active={isActive}
+                  >
+                    <ListItemIcon>{item.icon}</ListItemIcon>
+                    <ListItemText primary={item.label} />
+                  </StyledListItem>
+                );
+              })}
+            </List>
+            {sectionIndex < menuItems.length - 1 && (
+              <Divider
+                sx={{
+                  margin: '16px 20px',
+                  borderColor: 'rgba(255, 255, 255, 0.1)',
+                }}
+              />
+            )}
+          </Box>
+        ))}
+      </StyledDrawer>
+      <MainContent>{children}</MainContent>
+    </Box>
   );
 };
 

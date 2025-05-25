@@ -12,6 +12,7 @@
     "@material-ui/icons": "^4.11.3",
     "@mui/icons-material": "^5.15.16",
     "@mui/material": "^5.15.16",
+    "@mui/system": "^5.15.16",
     "@reduxjs/toolkit": "^2.2.3",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^15.0.5",

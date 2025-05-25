@@ -3,8 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getSettings } from '../../Store/Actions/settingsActions';
 
 export const useUser = () => {
-  const user = useSelector((state) => state.auth.user);
-  const localUser = JSON.parse(localStorage.getItem('user'));
+  const user = useSelector((state) => state.auth.userDetails);
+  const localUser = JSON.parse(localStorage.getItem('user') || 'null');
   const currentUser = user ?? localUser;
   const dispatch = useDispatch();
 

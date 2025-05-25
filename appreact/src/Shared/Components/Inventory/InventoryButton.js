@@ -1,20 +1,21 @@
-import React from "react";
-import { t } from "i18next";
-import { useProductContext } from "../../Context/useProductContext";
-import { Button } from "@material-ui/core";
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useProductContext } from '../../Context/useProductContext';
+import { Button } from '@material-ui/core';
 
 const InventoryButton = () => {
   const { handleModal } = useProductContext();
+  const { t } = useTranslation();
 
   return (
     <>
       <Button
-        variant="contained"
-        color="primary"
+        variant='contained'
+        color='primary'
         onClick={handleModal}
-        data-testid="inventory-button"
+        data-testid='inventory-button'
       >
-        {t("addProduct")}
+        {t('addProduct')}
       </Button>
     </>
   );
