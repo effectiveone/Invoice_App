@@ -1,6 +1,6 @@
-import Layout from "../Shared/Components/Layout/layout";
+import Layout from "../shared/ui/Layout/layout";
 import React from "react";
-import Settings from "../Shared/Components/Settings/Settings";
+import Settings from "../features/settings/ui/Settings/Settings";
 
 const SettingsPage = () => {
   return (

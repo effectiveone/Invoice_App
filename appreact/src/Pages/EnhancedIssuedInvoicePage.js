@@ -1,8 +1,8 @@
 import React from 'react';
-import Layout from '../Shared/Components/Layout/layout';
-import { InvoiceProvider } from '../Shared/Context/useInvoiceContext';
-import { EnhancedInvoicesTable } from '../Shared/Components/DataTable';
-import { useInvoiceContext } from '../Shared/Context/useInvoiceContext';
+import Layout from '../shared/ui/Layout/layout';
+import { InvoiceProvider } from '../entities/invoice/model/useInvoiceContext';
+import { EnhancedInvoicesTable } from '../shared/ui/DataTable';
+import { useInvoiceContext } from '../entities/invoice/model/useInvoiceContext';
 
 // Component that uses the invoice context
 const InvoicesTableWithContext = () => {

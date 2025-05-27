@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+description: "Agent może edytować tylko pliki testowe (`*.test.ts`, `*.spec.ts`)."
+globs:
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+alwaysApply: true
+---

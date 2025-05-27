@@ -1,7 +1,7 @@
-import React from "react";
-import Layout from "../Shared/Components/Layout/layout";
-import { StatisticProvider } from "../Shared/Context/useStatisticContext";
-import Dashboard from "../Shared/Components/Dashboard";
+import React from 'react';
+import Layout from '../shared/ui/Layout/layout';
+import { StatisticProvider } from '../features/dashboard/model/useStatisticContext';
+import Dashboard from '../features/dashboard/ui/Dashboard';
 
 const DashboardPage = () => {
   return (

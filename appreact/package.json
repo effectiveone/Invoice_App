@@ -50,8 +50,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "electron": "^30.0.1",
     "electron-builder": "^24.13.3",
-    "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.8"
+    "redux-mock-store": "^1.5.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -78,5 +77,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!(axios|@babel|uuid)/)"
+    ],
+    "moduleNameMapper": {
+      "^axios$": "axios/dist/node/axios.cjs"
+    }
   }
 }
