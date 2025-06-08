@@ -1,18 +1,7 @@
-version: '3'
+version: '3.8'
 
 services:
-  node:
-    build:
-      context: .
-      dockerfile: NODE.DOCKERFILE
-    volumes:
-      - ./appnode:/appnode
-      - /appnode/node_modules
-    ports:
-      - 5002:5002
-    networks:
-      - invoice-network
-
+  # Frontend React
   frontend:
     container_name: invoice_v2_react
     build:
@@ -28,20 +17,245 @@ services:
       - /appreact/node_modules
     networks:
       - invoice-network
+    depends_on:
+      - api-gateway
 
+  # API Gateway (NestJS)
+  api-gateway:
+    container_name: invoice_api_gateway
+    build:
+      context: .
+      dockerfile: NESTJS.DOCKERFILE
+    ports:
+      - 5000:5000
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/invoiceapp
+      - POSTGRES_URL=postgresql://postgres:password@postgres:5432/invoiceapp
+      - REDIS_URL=redis://redis:6379
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - KAFKA_BROKERS=kafka:9092
+      - JWT_SECRET=your-super-secret-jwt-key
+    volumes:
+      - ./backend-nestjs:/app
+      - /app/node_modules
+    networks:
+      - invoice-network
+    depends_on:
+      - mongodb
+      - postgres
+      - redis
+      - elasticsearch
+      - kafka
+
+  # Auth Microservice
+  auth-service:
+    container_name: invoice_auth_service
+    build:
+      context: ./microservices/auth-service
+      dockerfile: Dockerfile
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/invoiceapp_auth
+      - KAFKA_BROKERS=kafka:9092
+      - JWT_SECRET=your-super-secret-jwt-key
+    networks:
+      - invoice-network
+    depends_on:
+      - mongodb
+      - kafka
+
+  # Invoice Microservice
+  invoice-service:
+    container_name: invoice_invoice_service
+    build:
+      context: ./microservices/invoice-service
+      dockerfile: Dockerfile
+    environment:
+      - POSTGRES_URL=postgresql://postgres:password@postgres:5432/invoiceapp_invoices
+      - KAFKA_BROKERS=kafka:9092
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    networks:
+      - invoice-network
+    depends_on:
+      - postgres
+      - kafka
+      - elasticsearch
+
+  # Product Microservice
+  product-service:
+    container_name: invoice_product_service
+    build:
+      context: ./microservices/product-service
+      dockerfile: Dockerfile
+    environment:
+      - POSTGRES_URL=postgresql://postgres:password@postgres:5432/invoiceapp_products
+      - KAFKA_BROKERS=kafka:9092
+      - REDIS_URL=redis://redis:6379
+    networks:
+      - invoice-network
+    depends_on:
+      - postgres
+      - kafka
+      - redis
+
+  # Analytics Microservice
+  analytics-service:
+    container_name: invoice_analytics_service
+    build:
+      context: ./microservices/analytics-service
+      dockerfile: Dockerfile
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - KAFKA_BROKERS=kafka:9092
+      - REDIS_URL=redis://redis:6379
+    networks:
+      - invoice-network
+    depends_on:
+      - elasticsearch
+      - kafka
+      - redis
+
+  # Notification Microservice
+  notification-service:
+    container_name: invoice_notification_service
+    build:
+      context: ./microservices/notification-service
+      dockerfile: Dockerfile
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+      - MAIL_HOST=smtp.mailtrap.io
+      - MAIL_PORT=587
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_FROM_ADDRESS=noreply@invoiceapp.com
+    networks:
+      - invoice-network
+    depends_on:
+      - kafka
+
+  # Utility Service (PHP)
+  utility-service-php:
+    container_name: invoice_utility_service
+    build:
+      context: ./microservices/utility-service-php
+      dockerfile: Dockerfile
+    ports:
+      - 3005:80
+    networks:
+      - invoice-network
+
+  # MongoDB
   mongodb:
     image: mongo:latest
+    container_name: invoice_mongodb
     ports:
       - 27017:27017
     volumes:
-      - ./data/db:/data/db
+      - mongodb_data:/data/db
       - ./init.js:/docker-entrypoint-initdb.d/init.js:ro
     networks:
       - invoice-network
+
+  # PostgreSQL
+  postgres:
+    image: postgres:15
+    container_name: invoice_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: invoiceapp
+    ports:
+      - 5433:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - invoice-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: invoice_redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+    networks:
+      - invoice-network
+
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: invoice_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - invoice-network
+
+  # Kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: invoice_kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    networks:
+      - invoice-network
+    depends_on:
+      - elasticsearch
+
+  # Zookeeper (for Kafka)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: invoice_zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - invoice-network
+
+  # Kafka
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: invoice_kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - invoice-network
+
+  # Kafka UI
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: invoice_kafka_ui
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    ports:
+      - 8080:8080
+    networks:
+      - invoice-network
+    depends_on:
+      - kafka
 
 networks:
   invoice-network:
     driver: bridge
 
 volumes:
-  mysqldata: {}
+  mongodb_data:
+  postgres_data:
+  redis_data:
+  elasticsearch_data:

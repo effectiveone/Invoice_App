@@ -1,32 +1,77 @@
 # 🧾 Enterprise Invoice Management System
 
 [![React](https://img.shields.io/badge/React-18.3.1-blue.svg)](https://reactjs.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-Express-green.svg)](https://nodejs.org/)
+[![NestJS](https://img.shields.io/badge/NestJS-10.0-red.svg)](https://nestjs.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue.svg)](https://postgresql.org/)
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB-green.svg)](https://mongodb.com/)
+[![Redis](https://img.shields.io/badge/Cache-Redis-red.svg)](https://redis.io/)
 [![Docker](https://img.shields.io/badge/Docker-Containerized-blue.svg)](https://docker.com/)
+[![Microservices](https://img.shields.io/badge/Architecture-Microservices-green.svg)](https://microservices.io/)
 [![Redux Toolkit](https://img.shields.io/badge/State-Redux_Toolkit-purple.svg)](https://redux-toolkit.js.org/)
 [![Material-UI](https://img.shields.io/badge/UI-Material_UI-blue.svg)](https://mui.com/)
+[![Kafka](https://img.shields.io/badge/MessageBroker-Apache_Kafka-black.svg)](https://kafka.apache.org/)
+[![Elasticsearch](https://img.shields.io/badge/Search-Elasticsearch-yellow.svg)](https://elastic.co/)
 
-> **A comprehensive, enterprise-grade invoice management system built with modern React architecture patterns, demonstrating advanced software engineering principles and scalable design patterns.**
+> **A comprehensive, enterprise-grade invoice management system built with modern microservices architecture and React design patterns, demonstrating advanced software engineering principles, scalable design patterns, and production-ready practices.**
 
 ## 🏗️ Architecture Overview
 
-This application showcases **Feature-Sliced Design (FSD)** architecture - a modern, scalable approach to frontend application structure that promotes maintainability, testability, and team collaboration.
+This application showcases **Microservices Architecture** combined with **Feature-Sliced Design (FSD)** on the frontend - a modern, scalable approach that promotes maintainability, testability, and team collaboration across distributed systems.
 
-### 📁 Project Structure
+### 🌐 Microservices Architecture
 
 ```
-src/
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   API Gateway   │    │  Microservices  │
+│   React App     │◄──►│    NestJS       │◄──►│     Cluster     │
+│   Port: 3001    │    │   Port: 5000    │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                                │
+                                ▼
+        ┌───────────────────────────────────────────────────────┐
+        │                Message Broker                         │
+        │                Apache Kafka                           │
+        └───────────────────────────────────────────────────────┘
+                                │
+                ┌───────────────┼───────────────┐
+                ▼               ▼               ▼
+    ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+    │  Auth Service   │ │ Invoice Service │ │ Product Service │
+    │   Laravel +     │ │     NestJS      │ │     NestJS      │
+    │    NestJS       │ │  PostgreSQL     │ │  PostgreSQL     │
+    └─────────────────┘ └─────────────────┘ └─────────────────┘
+                ▼               ▼               ▼
+    ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+    │Notification Svc │ │ Analytics Svc   │ │ Utility Svc     │
+    │     NestJS      │ │     NestJS      │ │      PHP        │
+    │   Port: 3004    │ │ Elasticsearch   │ │   Port: 3005    │
+    └─────────────────┘ └─────────────────┘ └─────────────────┘
+```
+
+### 📁 Frontend Project Structure (Feature-Sliced Design)
+
+```
+appreact/src/
 ├── app/                    # Application Layer - Configuration & Setup
 │   ├── providers/          # React Providers (Redux, Router, i18n)
 │   ├── routing/           # Route configuration and guards
 │   └── store/             # Redux store configuration
 ├── pages/                 # Pages Layer - Route-level components
+│   ├── LoginPage/         # Authentication page
+│   ├── DashboardPage/     # Main dashboard
+│   ├── InvoicesPage/      # Invoice listing
+│   └── SettingsPage/      # Application settings
 ├── features/              # Features Layer - Business logic modules
 │   ├── auth/              # Authentication & authorization
-│   ├── dashboard/         # Analytics and reporting
+│   │   ├── ui/            # Auth UI components
+│   │   ├── model/         # Auth business logic
+│   │   └── api/           # Auth API calls
 │   ├── invoice/           # Invoice management
-│   ├── inventory/         # Product catalog management
+│   │   ├── ui/            # Invoice forms, templates
+│   │   ├── model/         # Invoice calculations, validation
+│   │   └── api/           # Invoice CRUD operations
+│   ├── product/           # Product catalog management
 │   ├── kontrahent/        # Client/contractor management
 │   └── settings/          # Application configuration
 ├── entities/              # Entities Layer - Business domain models
@@ -41,622 +86,856 @@ src/
     └── utils/             # Helper functions and constants
 ```
 
-### 🎯 FSD Architecture Benefits
+### 🎯 Architecture Benefits
 
-- **🔄 Unidirectional Dependencies**: `app → pages → features → entities → shared`
-- **🏗️ Layer Isolation**: Each layer can only import from lower layers
-- **🧩 Feature Isolation**: Features are self-contained and don't depend on each other
-- **📦 Public API**: Each module exposes a clean public interface
-- **🔧 Scalability**: Easy to add new features without affecting existing code
+- **🔄 Microservices Isolation**: Each service is independently deployable and scalable
+- **🏗️ Layer Isolation**: Frontend follows FSD with unidirectional dependencies
+- **🧩 Service Autonomy**: Services communicate via Kafka events
+- **📦 API Gateway**: Centralized routing and cross-cutting concerns
+- **🔧 Horizontal Scaling**: Individual services can be scaled based on demand
+- **🚀 Technology Diversity**: Best tool for each service (NestJS, PHP, Laravel)
 
 ## 🎨 Design Patterns Implementation
 
-### 1. **Factory Pattern**
+### 1. **Microservices Patterns**
 
-_Location: `features/invoice/ui/InvoicesTemplates/factoryInvoicePrinter.js`_
+#### API Gateway Pattern
+
+_Location: `backend-nestjs/src/`_
+
+```typescript
+@Controller('api')
+export class ApiGatewayController {
+  constructor(
+    private readonly invoiceService: InvoiceProxyService,
+    private readonly productService: ProductProxyService,
+    private readonly authService: AuthProxyService,
+  ) {}
+
+  @Get('invoices')
+  async getInvoices(@Headers() headers) {
+    return this.invoiceService.proxyRequest('/invoices', headers);
+  }
+
+  @Post('invoices')
+  async createInvoice(@Body() data, @Headers() headers) {
+    // Cross-cutting concerns: authentication, logging, rate limiting
+    await this.authService.validateToken(headers.authorization);
+    return this.invoiceService.proxyRequest('/invoices', headers, data);
+  }
+}
+```
+
+#### Event Sourcing with Kafka
+
+_Location: `microservices/*/src/events/`_
+
+```typescript
+@Injectable()
+export class InvoiceEventHandler {
+  constructor(private readonly kafkaService: KafkaService) {}
+
+  async handleInvoiceCreated(invoice: Invoice) {
+    await this.kafkaService.emit('invoice.created', {
+      id: invoice.id,
+      amount: invoice.total,
+      customerId: invoice.customerId,
+      timestamp: new Date(),
+    });
+  }
+
+  @EventPattern('invoice.created')
+  async onInvoiceCreated(data: InvoiceCreatedEvent) {
+    // Analytics service listens and processes
+    await this.analyticsService.recordSale(data);
+    // Notification service sends confirmation email
+    await this.notificationService.sendInvoiceNotification(data);
+  }
+}
+```
+
+### 2. **Factory Pattern - Invoice Templates**
+
+_Location: `appreact/src/features/invoice/ui/InvoicesTemplates/factoryInvoicePrinter.js`_
 
 ```javascript
+const InvoiceTemplateFactory = {
+  templates: new Map([
+    ['modern', ModernTemplate],
+    ['corporate', CorporateTemplate],
+    ['creative', CreativeTemplate],
+    ['minimal', MinimalTemplate],
+  ]),
+
+  create(templateType, props) {
+    const TemplateComponent = this.templates.get(templateType);
+    if (!TemplateComponent) {
+      throw new Error(`Unknown template type: ${templateType}`);
+    }
+    return <TemplateComponent {...props} />;
+  },
+
+  register(templateType, component) {
+    this.templates.set(templateType, component);
+  },
+};
+
 const FactoryInvoicePrinter = () => {
-  const selectedOption = useSelector(
-    (state) => state?.settings.settings?.templateInvoice,
+  const selectedTemplate = useSelector(
+    (state) => state?.settings.settings?.templateInvoice || 'modern',
   );
 
-  const renderConfigurableTemplate = (templateId) => {
-    const config = currentTemplateConfig || {};
-    const templateProps = { layout, colors, logo, customSettings };
-
-    switch (templateId) {
-      case 'modern':
-        return <ModernTemplate {...templateProps} />;
-      case 'corporate':
-        return <CorporateTemplate {...templateProps} />;
-      case 'creative':
-        return <CreativeTemplate {...templateProps} />;
-      case 'minimal':
-        return <MinimalTemplate {...templateProps} />;
-      default:
-        return <ModernTemplate {...templateProps} />;
-    }
+  const templateProps = {
+    invoice: useSelector((state) => state.invoice.current),
+    company: useSelector((state) => state.company.info),
+    theme: useSelector((state) => state.settings.theme),
   };
+
+  return InvoiceTemplateFactory.create(selectedTemplate, templateProps);
 };
 ```
 
 **Benefits:**
 
 - ✅ Encapsulates template creation logic
-- ✅ Easy to add new invoice templates
-- ✅ Maintains consistent interface across templates
-- ✅ Supports dynamic template switching
+- ✅ Runtime template registration
+- ✅ Consistent interface across templates
+- ✅ Easy A/B testing of templates
 
-### 2. **Provider Pattern (Context API)**
+### 3. **Provider Pattern with Dependency Injection**
 
-_Location: `entities/_/model/use*Context.js`*
+_Location: `appreact/src/entities/*/model/useContexts.js`_
 
 ```javascript
-// Invoice Context Provider
+// Service Container for Dependency Injection
+class ServiceContainer {
+  constructor() {
+    this.services = new Map();
+  }
+
+  register(name, factory) {
+    this.services.set(name, factory);
+  }
+
+  resolve(name) {
+    const factory = this.services.get(name);
+    return factory ? factory() : null;
+  }
+}
+
+const container = new ServiceContainer();
+
+// Register services
+container.register('apiService', () => new ApiService());
+container.register('cacheService', () => new CacheService());
+
+// Invoice Context Provider with DI
 export const InvoiceProvider = ({ children }) => {
-  const invoice = useInvoice();
+  const apiService = container.resolve('apiService');
+  const cacheService = container.resolve('cacheService');
+
+  const invoiceService = useMemo(
+    () => ({
+      async loadInvoices() {
+        const cached = await cacheService.get('invoices');
+        if (cached) return cached;
+
+        const data = await apiService.get('/invoices');
+        await cacheService.set('invoices', data, 300); // 5min cache
+        return data;
+      },
+
+      async createInvoice(invoiceData) {
+        const result = await apiService.post('/invoices', invoiceData);
+        await cacheService.invalidate('invoices');
+        return result;
+      },
+    }),
+    [apiService, cacheService],
+  );
+
   return (
-    <InvoiceContext.Provider value={invoice}>
+    <InvoiceContext.Provider value={invoiceService}>
       {children}
     </InvoiceContext.Provider>
   );
 };
 
-// Usage with multiple providers
-<InvoiceProvider>
-  <ProductProvider>
-    <KontrahentProvider>
-      <CompanyProvider>
-        <NewInvoice />
-      </CompanyProvider>
-    </KontrahentProvider>
-  </ProductProvider>
-</InvoiceProvider>;
+// Composition of providers
+<ServiceProvider>
+  <InvoiceProvider>
+    <ProductProvider>
+      <KontrahentProvider>
+        <Application />
+      </KontrahentProvider>
+    </ProductProvider>
+  </InvoiceProvider>
+</ServiceProvider>;
 ```
 
-**Benefits:**
+### 4. **Observer Pattern with Redux + Saga**
 
-- ✅ Dependency injection for React components
-- ✅ Centralized state management per domain
-- ✅ Testable and mockable contexts
-- ✅ Clean separation of concerns
-
-### 3. **Render Props Pattern**
-
-_Location: `shared/ui/DataTable/DataTableProvider.js`_
+_Location: `appreact/src/app/store/`_
 
 ```javascript
-const DataTableProvider = ({ children, data, columns, ...config }) => {
-  const tableState = { data: paginatedData, totalCount, searchTerm, filters };
-  const tableActions = {
-    handleSearchChange,
-    handleFilterChange,
-    handleSortRequest,
-  };
-
-  return children ? children(tableState, tableActions) : defaultRender();
-};
-
-// Usage
-<DataTableProvider data={invoices} columns={columns}>
-  {(tableState, tableActions) => (
-    <CustomTable
-      {...tableState}
-      {...tableActions}
-      onCustomAction={handleCustomAction}
-    />
-  )}
-</DataTableProvider>;
-```
-
-**Benefits:**
-
-- ✅ Maximum component flexibility
-- ✅ Reusable data management logic
-- ✅ Customizable rendering
-- ✅ Separation of data logic from presentation
-
-### 4. **Observer Pattern (Redux)**
-
-_Location: `app/store/`_
-
-```javascript
-// Redux store with multiple reducers observing actions
+// Redux store with middleware
 const store = configureStore({
   reducer: {
     auth: authReducer,
-    invoices: fakturaReducer,
+    invoices: invoicesReducer,
     products: productReducer,
-    settings: settingsReducer,
-    // ... other reducers
+    notifications: notificationReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware()
+      .concat(sagaMiddleware)
+      .concat(websocketMiddleware)
+      .concat(analyticsMiddleware),
 });
 
-// Components subscribe to state changes
-const InvoiceList = () => {
-  const invoices = useSelector((state) => state.faktura.faktury);
-  const dispatch = useDispatch();
+// Saga for side effects
+function* watchInvoiceActions() {
+  yield takeEvery('invoices/create', function* (action) {
+    try {
+      // Optimistic update
+      yield put(invoicesActions.addOptimistic(action.payload));
 
-  useEffect(() => {
-    dispatch(readFaktury(currentUser));
-  }, [currentUser, dispatch]);
-};
+      // API call
+      const result = yield call(api.createInvoice, action.payload);
+
+      // Update with real data
+      yield put(invoicesActions.createSuccess(result));
+
+      // Side effects
+      yield put(
+        notificationsActions.show({
+          type: 'success',
+          message: 'Invoice created successfully',
+        }),
+      );
+
+      // Analytics tracking
+      yield call(analytics.track, 'invoice_created', {
+        amount: result.total,
+        currency: result.currency,
+      });
+    } catch (error) {
+      yield put(invoicesActions.createFailure(error));
+      yield put(invoicesActions.removeOptimistic(action.payload.tempId));
+    }
+  });
+}
 ```
 
-**Benefits:**
+### 5. **Command Pattern for Undo/Redo**
 
-- ✅ Predictable state management
-- ✅ Time-travel debugging
-- ✅ Centralized application state
-- ✅ Reactive UI updates
-
-### 5. **Higher-Order Component (HOC) Pattern**
-
-_Location: `shared/ui/AlertNotification.js`_
+_Location: `appreact/src/features/invoice/model/commands.js`_
 
 ```javascript
-const withReduxConnection = (Component) => {
-  return connect(mapStoreStateToProps, mapActionsToProps)(Component);
-};
+class Command {
+  execute() {
+    throw new Error('Must implement execute');
+  }
+  undo() {
+    throw new Error('Must implement undo');
+  }
+}
 
-export default withReduxConnection(AlertNotification);
+class AddInvoiceItemCommand extends Command {
+  constructor(invoice, item) {
+    super();
+    this.invoice = invoice;
+    this.item = item;
+  }
+
+  execute() {
+    this.invoice.addItem(this.item);
+    return this.invoice;
+  }
+
+  undo() {
+    this.invoice.removeItem(this.item.id);
+    return this.invoice;
+  }
+}
+
+class InvoiceCommandManager {
+  constructor() {
+    this.history = [];
+    this.currentIndex = -1;
+  }
+
+  execute(command) {
+    // Remove any commands after current index
+    this.history = this.history.slice(0, this.currentIndex + 1);
+
+    // Execute and add to history
+    const result = command.execute();
+    this.history.push(command);
+    this.currentIndex++;
+
+    return result;
+  }
+
+  undo() {
+    if (this.canUndo()) {
+      const command = this.history[this.currentIndex];
+      this.currentIndex--;
+      return command.undo();
+    }
+  }
+
+  redo() {
+    if (this.canRedo()) {
+      this.currentIndex++;
+      const command = this.history[this.currentIndex];
+      return command.execute();
+    }
+  }
+
+  canUndo() {
+    return this.currentIndex >= 0;
+  }
+  canRedo() {
+    return this.currentIndex < this.history.length - 1;
+  }
+}
+
+// Usage in React component
+const useInvoiceCommands = () => {
+  const commandManager = useRef(new InvoiceCommandManager());
+
+  const addItem = useCallback(
+    (item) => {
+      const command = new AddInvoiceItemCommand(invoice, item);
+      const newInvoice = commandManager.current.execute(command);
+      setInvoice(newInvoice);
+    },
+    [invoice],
+  );
+
+  const undo = useCallback(() => {
+    const newInvoice = commandManager.current.undo();
+    if (newInvoice) setInvoice(newInvoice);
+  }, []);
+
+  return { addItem, undo, canUndo: commandManager.current.canUndo() };
+};
 ```
 
-### 6. **Custom Hooks Pattern**
+### 6. **Decorator Pattern for API Caching**
 
-_Location: `shared/lib/`_
+_Location: `appreact/src/shared/api/decorators.js`_
 
 ```javascript
-// Reusable business logic in custom hooks
-export const useInvoice = () => {
-  const [items, setItems] = useState([]);
-  const [totalNetValue, setTotalNetValue] = useState(0);
+class CacheDecorator {
+  constructor(apiService, cacheService) {
+    this.apiService = apiService;
+    this.cacheService = cacheService;
+  }
 
-  const calculateTotals = useCallback(() => {
-    // Complex calculation logic
-  }, [items]);
+  async get(url, options = {}) {
+    const cacheKey = `api:${url}:${JSON.stringify(options)}`;
+    const cached = await this.cacheService.get(cacheKey);
 
-  return {
-    items,
-    setItems,
-    totalNetValue,
-    calculateTotals,
-    handleSubmit,
-    // ... other invoice operations
-  };
+    if (cached && !options.fresh) {
+      return cached;
+    }
+
+    const result = await this.apiService.get(url, options);
+    await this.cacheService.set(cacheKey, result, options.ttl || 300);
+    return result;
+  }
+
+  async post(url, data, options = {}) {
+    const result = await this.apiService.post(url, data, options);
+
+    // Invalidate related cache entries
+    if (options.invalidateCache) {
+      await this.cacheService.invalidatePattern(options.invalidateCache);
+    }
+
+    return result;
+  }
+}
+
+class LoggingDecorator {
+  constructor(apiService) {
+    this.apiService = apiService;
+  }
+
+  async get(url, options = {}) {
+    console.log(`API GET: ${url}`, options);
+    const start = performance.now();
+
+    try {
+      const result = await this.apiService.get(url, options);
+      console.log(`API GET: ${url} - ${performance.now() - start}ms`);
+      return result;
+    } catch (error) {
+      console.error(`API GET ERROR: ${url}`, error);
+      throw error;
+    }
+  }
+}
+
+// API Service with decorators
+const createApiService = () => {
+  let service = new BaseApiService();
+  service = new CacheDecorator(service, cacheService);
+  service = new LoggingDecorator(service);
+  return service;
 };
 ```
 
-## 🧹 Clean Code Principles
+## 🧹 Clean Code & SOLID Principles
 
 ### 1. **Single Responsibility Principle**
 
-Each component and hook has a single, well-defined purpose:
-
 ```javascript
-// ✅ Good: Single responsibility
-const InvoiceCalculator = ({ items }) => {
-  const total = calculateInvoiceTotal(items);
-  return <div>Total: {total}</div>;
+// ❌ Bad: Multiple responsibilities
+const InvoiceComponent = ({ invoice }) => {
+  const [total, setTotal] = useState(0);
+
+  // Calculation logic
+  useEffect(() => {
+    const sum = invoice.items.reduce(
+      (acc, item) => acc + item.price * item.quantity * (1 + item.taxRate),
+      0,
+    );
+    setTotal(sum);
+  }, [invoice.items]);
+
+  // Validation logic
+  const validate = () => {
+    return invoice.items.length > 0 && invoice.customer;
+  };
+
+  // Rendering logic
+  return <div>{/* Complex JSX */}</div>;
 };
 
 // ✅ Good: Separated concerns
 const useInvoiceCalculations = (items) => {
-  return useMemo(() => calculateInvoiceTotal(items), [items]);
+  return useMemo(() => {
+    return items.reduce(
+      (acc, item) => acc + item.price * item.quantity * (1 + item.taxRate),
+      0,
+    );
+  }, [items]);
+};
+
+const useInvoiceValidation = (invoice) => {
+  return useMemo(
+    () => ({
+      isValid: invoice.items.length > 0 && invoice.customer,
+      errors: {
+        items: invoice.items.length === 0 ? 'At least one item required' : null,
+        customer: !invoice.customer ? 'Customer is required' : null,
+      },
+    }),
+    [invoice],
+  );
+};
+
+const InvoiceComponent = ({ invoice }) => {
+  const total = useInvoiceCalculations(invoice.items);
+  const validation = useInvoiceValidation(invoice);
+
+  return (
+    <InvoiceView invoice={invoice} total={total} validation={validation} />
+  );
 };
 ```
 
-### 2. **Dependency Inversion**
-
-High-level modules don't depend on low-level modules:
+### 2. **Dependency Inversion Principle**
 
 ```javascript
-// ✅ Abstract API interface
-const useApiService = () => {
-  return {
-    get: (url) => api.get(url),
-    post: (url, data) => api.post(url, data),
-    // ... other methods
-  };
-};
+// ✅ Abstract interfaces
+interface IApiService {
+  get(url: string): Promise<any>;
+  post(url: string, data: any): Promise<any>;
+}
 
-// ✅ Business logic depends on abstraction
-const useInvoices = () => {
-  const apiService = useApiService();
+interface ICacheService {
+  get(key: string): Promise<any>;
+  set(key: string, value: any, ttl?: number): Promise<void>;
+}
 
-  const loadInvoices = async () => {
-    const response = await apiService.get('/invoices');
-    return response.data;
-  };
+// ✅ High-level modules depend on abstractions
+class InvoiceService {
+  constructor(
+    private apiService: IApiService,
+    private cacheService: ICacheService
+  ) {}
+
+  async getInvoices(): Promise<Invoice[]> {
+    const cached = await this.cacheService.get('invoices');
+    if (cached) return cached;
+
+    const invoices = await this.apiService.get('/invoices');
+    await this.cacheService.set('invoices', invoices, 300);
+    return invoices;
+  }
+}
+
+// ✅ Dependency injection in React
+const InvoiceContainer = () => {
+  const apiService = useContext(ApiServiceContext);
+  const cacheService = useContext(CacheServiceContext);
+
+  const invoiceService = useMemo(
+    () => new InvoiceService(apiService, cacheService),
+    [apiService, cacheService]
+  );
+
+  return <InvoiceList service={invoiceService} />;
 };
 ```
 
 ### 3. **Open/Closed Principle**
 
-Components are open for extension, closed for modification:
-
 ```javascript
-// ✅ Extensible template system
-const InvoiceTemplate = ({ template, ...props }) => {
-  const TemplateComponent = templateRegistry[template];
-  return <TemplateComponent {...props} />;
-};
+// ✅ Extensible without modification
+abstract class PaymentProcessor {
+  abstract process(amount: number, details: any): Promise<PaymentResult>;
 
-// ✅ Easy to add new templates without modifying existing code
-templateRegistry.register('newTemplate', NewTemplateComponent);
-```
+  async processWithLogging(amount: number, details: any): Promise<PaymentResult> {
+    console.log(`Processing payment: ${amount}`);
+    const result = await this.process(amount, details);
+    console.log(`Payment result: ${result.success}`);
+    return result;
+  }
+}
 
-### 4. **Consistent Naming Conventions**
+class StripePaymentProcessor extends PaymentProcessor {
+  async process(amount: number, details: any): Promise<PaymentResult> {
+    // Stripe-specific implementation
+    return await stripe.charges.create({ amount, ...details });
+  }
+}
 
-```javascript
-// ✅ Clear, descriptive names
-const useInvoiceCalculations = () => {
-  /* ... */
-};
-const InvoiceFormValidator = () => {
-  /* ... */
-};
-const calculateInvoiceTotalWithTax = (items, taxRate) => {
-  /* ... */
-};
+class PayPalPaymentProcessor extends PaymentProcessor {
+  async process(amount: number, details: any): Promise<PaymentResult> {
+    // PayPal-specific implementation
+    return await paypal.payment.create({ amount, ...details });
+  }
+}
 
-// ✅ Consistent file naming
-// useInvoiceContext.js
-// InvoiceProvider.js
-// invoiceActions.js
+// Factory for payment processors
+class PaymentProcessorFactory {
+  static create(type: string): PaymentProcessor {
+    switch(type) {
+      case 'stripe': return new StripePaymentProcessor();
+      case 'paypal': return new PayPalPaymentProcessor();
+      default: throw new Error(`Unknown payment processor: ${type}`);
+    }
+  }
+}
 ```
 
 ## 🏛️ Enterprise Architecture Features
 
-### 1. **Modular State Management**
+### 1. **Microservices Communication**
 
-```javascript
-// Centralized store with domain-specific reducers
-const store = configureStore({
-  reducer: {
-    auth: authReducer, // Authentication state
-    invoices: fakturaReducer, // Invoice management
-    products: productReducer, // Inventory management
-    settings: settingsReducer, // Application configuration
-    alerts: alertReducer, // User notifications
-  },
-});
+```typescript
+// Event-driven architecture with Kafka
+@Injectable()
+export class InvoiceService {
+  constructor(
+    private readonly kafkaService: KafkaService,
+    private readonly repository: InvoiceRepository,
+  ) {}
+
+  async createInvoice(data: CreateInvoiceDto): Promise<Invoice> {
+    const invoice = await this.repository.create(data);
+
+    // Publish event for other services
+    await this.kafkaService.emit('invoice.created', {
+      invoiceId: invoice.id,
+      customerId: invoice.customerId,
+      amount: invoice.total,
+      currency: invoice.currency,
+      timestamp: new Date(),
+    });
+
+    return invoice;
+  }
+
+  @EventPattern('payment.completed')
+  async handlePaymentCompleted(data: PaymentCompletedEvent) {
+    await this.repository.markAsPaid(data.invoiceId);
+
+    await this.kafkaService.emit('invoice.paid', {
+      invoiceId: data.invoiceId,
+      paymentId: data.paymentId,
+      timestamp: new Date(),
+    });
+  }
+}
 ```
 
-### 2. **API Layer Abstraction**
+### 2. **CQRS Implementation**
 
-```javascript
-// Centralized API configuration
-const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
-  timeout: 10000,
-});
+```typescript
+// Command side
+@CommandHandler(CreateInvoiceCommand)
+export class CreateInvoiceHandler {
+  constructor(private repository: InvoiceRepository) {}
 
-// Domain-specific API services
-export const invoiceAPI = {
-  getAll: () => api.get('/invoices'),
-  create: (data) => api.post('/invoices', data),
-  update: (id, data) => api.put(`/invoices/${id}`, data),
-  delete: (id) => api.delete(`/invoices/${id}`),
-};
+  async execute(command: CreateInvoiceCommand): Promise<void> {
+    const invoice = new Invoice(command.data);
+    await this.repository.save(invoice);
+
+    // Publish domain event
+    DomainEvents.raise(new InvoiceCreatedEvent(invoice.id));
+  }
+}
+
+// Query side
+@QueryHandler(GetInvoicesQuery)
+export class GetInvoicesHandler {
+  constructor(private readModel: InvoiceReadModel) {}
+
+  async execute(query: GetInvoicesQuery): Promise<InvoiceDto[]> {
+    return this.readModel.findInvoices(query.filters);
+  }
+}
+
+// Projection for read model
+@EventsHandler(InvoiceCreatedEvent)
+export class InvoiceProjection {
+  constructor(private readModel: InvoiceReadModel) {}
+
+  async handle(event: InvoiceCreatedEvent): Promise<void> {
+    await this.readModel.createProjection({
+      id: event.invoiceId,
+      // ... denormalized data for fast reads
+    });
+  }
+}
 ```
 
-### 3. **Internationalization (i18n)**
+### 3. **Circuit Breaker Pattern**
 
-```javascript
-// Multi-language support
-import { useTranslation } from 'react-i18next';
+```typescript
+class CircuitBreaker {
+  private failures = 0;
+  private state: 'CLOSED' | 'OPEN' | 'HALF_OPEN' = 'CLOSED';
+  private nextAttempt = Date.now();
 
-const InvoiceForm = () => {
-  const { t } = useTranslation();
+  constructor(
+    private readonly threshold = 5,
+    private readonly timeout = 60000,
+  ) {}
 
-  return (
-    <form>
-      <label>{t('invoice.customerName')}</label>
-      <button>{t('invoice.save')}</button>
-    </form>
-  );
-};
-```
+  async call<T>(fn: () => Promise<T>): Promise<T> {
+    if (this.state === 'OPEN') {
+      if (Date.now() < this.nextAttempt) {
+        throw new Error('Circuit breaker is OPEN');
+      }
+      this.state = 'HALF_OPEN';
+    }
 
-### 4. **Theme System**
+    try {
+      const result = await fn();
+      this.onSuccess();
+      return result;
+    } catch (error) {
+      this.onFailure();
+      throw error;
+    }
+  }
 
-```javascript
-// Dynamic theme switching
-const useTheme = () => {
-  const designSettings = useSelector((state) => state.settings.settings);
-  const currentDesign = designSystems.find(
-    (design) => design.name === designSettings?.designName,
-  );
+  private onSuccess() {
+    this.failures = 0;
+    this.state = 'CLOSED';
+  }
 
-  return {
-    primary: currentDesign.primaryColor,
-    secondary: currentDesign.secondaryColor,
-    // ... other theme properties
-  };
-};
+  private onFailure() {
+    this.failures++;
+    if (this.failures >= this.threshold) {
+      this.state = 'OPEN';
+      this.nextAttempt = Date.now() + this.timeout;
+    }
+  }
+}
+
+// Usage in service
+@Injectable()
+export class ProductService {
+  private circuitBreaker = new CircuitBreaker();
+
+  async getProducts(): Promise<Product[]> {
+    return this.circuitBreaker.call(async () => {
+      return this.httpService.get('/products').toPromise();
+    });
+  }
+}
 ```
 
 ## 🛠️ Technology Stack
 
-### **Frontend**
+### **Frontend Architecture**
 
-- **React 18.3.1** - Latest React with Concurrent Features
-- **Redux Toolkit** - Modern Redux with RTK Query
-- **Material-UI v5** - Enterprise-grade component library
-- **React Router v6** - Declarative routing
-- **React Hook Form** - Performant form management
-- **i18next** - Internationalization framework
-- **Styled Components** - CSS-in-JS styling
+- **React 18.3.1** - Concurrent features, Suspense, automatic batching
+- **TypeScript 5.0** - Advanced type system with template literals
+- **Redux Toolkit** - RTK Query for data fetching
+- **Material-UI v5** - Emotion styling engine
+- **React Router v6** - Nested routing with data loading
+- **React Hook Form** - Uncontrolled components for performance
+- **i18next** - Interpolation and pluralization
+- **React Query** - Server state synchronization
 
-### **Backend**
+### **Backend Microservices**
 
-- **Node.js** - JavaScript runtime
-- **Express.js** - Web application framework
-- **MongoDB** - NoSQL database
-- **Mongoose** - MongoDB object modeling
-- **JWT** - JSON Web Token authentication
-- **Helmet** - Security middleware
-- **Swagger** - API documentation
+- **NestJS 10** - Decorators, Guards, Interceptors, Pipes
+- **PHP 8.1** - For utility services
+- **Laravel 10** - Authentication service
+- **PostgreSQL 15** - JSONB, CTEs, Window functions
+- **MongoDB 6** - GridFS, Change streams
+- **Redis 7** - Streams, Modules, ACLs
+- **Elasticsearch 8** - Vector search, ML features
 
-### **DevOps & Tools**
+### **Infrastructure & DevOps**
 
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
-- **Webpack** - Module bundler
-- **Babel** - JavaScript compiler
-- **ESLint** - Code linting
-- **Prettier** - Code formatting
+- **Docker** - Multi-stage builds, health checks
+- **Apache Kafka** - Exactly-once semantics
+- **Nginx** - Load balancing, SSL termination
+- **Prometheus** - Metrics collection
+- **Grafana** - Monitoring dashboards
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 16+
-- Docker & Docker Compose
-- MongoDB (or use Docker)
+- **Docker Desktop** - Latest version
+- **Node.js 18+** - With npm/yarn
+- **Docker Compose** - v2.0+
 
-### Installation
-
-1. **Clone the repository**
+### Quick Start with Docker
 
 ```bash
+# Clone the repository
 git clone <repository-url>
 cd InvoiceApp
+
+# Start all microservices
+./start-all-microservices.sh
 ```
 
-2. **Start with Docker (Recommended)**
+### Local Development Setup
 
 ```bash
-docker-compose up -d --build
-```
+# Start infrastructure
+docker-compose up -d mongodb postgres redis elasticsearch kafka
 
-3. **Manual Setup**
+# Backend services
+cd backend-nestjs && npm run start:dev
+cd microservices/auth-service && npm run start:dev
+cd microservices/invoice-service && npm run start:dev
 
-```bash
-# Backend
-cd appnode
-npm install
-npm start
-
-# Frontend
+# Frontend (recommended: yarn for better performance)
 cd appreact
-npm install
-npm start
+yarn install
+yarn start
 ```
 
-### Environment Configuration
+## 🌐 Application Endpoints
+
+### **Production URLs**
+
+- **Frontend**: http://localhost:3001
+- **API Gateway**: http://localhost:5000
+- **Swagger Docs**: http://localhost:5000/api-docs
+- **Kibana**: http://localhost:5601
+- **Kafka UI**: http://localhost:8080
+
+### **Microservice Health Checks**
+
+- **Auth Service**: http://localhost:5000/api/auth/health
+- **Invoice Service**: http://localhost:5000/api/invoices/health
+- **Product Service**: http://localhost:3003/health
+- **Analytics**: http://localhost:5000/api/analytics/health
+
+## 📊 Advanced Features
+
+### **Real-time Updates**
+
+- WebSocket connections for live invoice updates
+- Server-Sent Events for notifications
+- Optimistic UI updates with rollback
+
+### **Performance Optimizations**
+
+- React.memo for component memoization
+- useMemo/useCallback for expensive calculations
+- Code splitting with React.lazy()
+- Service Worker for offline functionality
+
+### **Security Implementation**
+
+- JWT with refresh token rotation
+- RBAC with granular permissions
+- API rate limiting per user/IP
+- Input sanitization and validation
+
+## �� Testing Strategy
 
 ```bash
-# Backend (.env)
-MONGO_URI=mongodb://localhost:27017/invoiceapp
-JWT_SECRET=your-secret-key
-PORT=5002
+# Frontend tests
+cd appreact
+yarn test                    # Unit tests
+yarn test:integration       # Integration tests
+yarn test:e2e               # End-to-end tests
 
-# Frontend
-REACT_APP_API_URL=http://localhost:5002/api
-```
-
-## 📊 Application Features
-
-### **Invoice Management**
-
-- ✅ Create, edit, and delete invoices
-- ✅ Multiple invoice templates (Basic, Modern, Corporate, Creative)
-- ✅ Dynamic VAT calculations (23%, 8%, 5%, 0%)
-- ✅ PDF generation and printing
-- ✅ Invoice numbering system
-- ✅ Multi-currency support
-
-### **Client Management**
-
-- ✅ Contractor/client database
-- ✅ Company information management
-- ✅ Search and filtering capabilities
-- ✅ Import/export functionality
-
-### **Product Catalog**
-
-- ✅ Product inventory management
-- ✅ Category-based organization
-- ✅ Stock level tracking
-- ✅ Pricing management
-
-### **Analytics & Reporting**
-
-- ✅ Sales statistics and charts
-- ✅ Revenue tracking
-- ✅ Tax reporting (JPK integration)
-- ✅ Dashboard with key metrics
-
-### **System Features**
-
-- ✅ Multi-language support (EN/PL)
-- ✅ Dark/Light theme switching
-- ✅ Responsive design
-- ✅ User authentication & authorization
-- ✅ Data export capabilities
-
-## 🧪 Testing Strategy
-
-### **Testing Pyramid**
-
-```
-    /\     E2E Tests (Cypress)
-   /  \
-  /____\   Integration Tests (React Testing Library)
- /______\  Unit Tests (Jest)
-```
-
-### **Test Coverage Areas**
-
-- ✅ Component rendering and interactions
-- ✅ Custom hooks functionality
-- ✅ Redux state management
-- ✅ API integration
-- ✅ Business logic validation
-- ✅ User workflows (E2E)
-
-### **Testing Tools**
-
-- **Jest** - Unit testing framework
-- **React Testing Library** - Component testing
-- **Redux Mock Store** - State testing
-- **MSW** - API mocking
-
-## 📈 Performance Optimizations
-
-### **React Optimizations**
-
-```javascript
-// Memoization for expensive calculations
-const expensiveValue = useMemo(() => calculateComplexValue(data), [data]);
-
-// Component memoization
-const OptimizedComponent = React.memo(({ data }) => {
-  return <ExpensiveComponent data={data} />;
-});
-
-// Callback memoization
-const handleClick = useCallback(() => {
-  onItemClick(item.id);
-}, [item.id, onItemClick]);
-```
-
-### **Bundle Optimization**
-
-- ✅ Code splitting with React.lazy()
-- ✅ Tree shaking for unused code elimination
-- ✅ Webpack optimization
-- ✅ Image optimization and lazy loading
-
-### **State Management Optimization**
-
-- ✅ Normalized state structure
-- ✅ Selective component subscriptions
-- ✅ Memoized selectors
-- ✅ Optimistic updates
-
-## 🔒 Security Implementation
-
-### **Frontend Security**
-
-- ✅ XSS protection with input sanitization
-- ✅ CSRF protection
-- ✅ Secure authentication flow
-- ✅ Input validation with Yup
-
-### **Backend Security**
-
-- ✅ Helmet.js security headers
-- ✅ JWT token authentication
-- ✅ Input sanitization
-- ✅ Rate limiting
-- ✅ CORS configuration
-
-## 🌐 API Documentation
-
-The application includes comprehensive API documentation using Swagger UI, available at:
-
-```
-http://localhost:5002/api-docs
-```
-
-### **API Endpoints**
-
-```
-Authentication:
-POST /api/auth/login
-POST /api/auth/register
-
-Invoices:
-GET    /api/invoices
-POST   /api/invoices
-PUT    /api/invoices/:id
-DELETE /api/invoices/:id
-
-Products:
-GET    /api/products
-POST   /api/products
-PUT    /api/products/:id
-DELETE /api/products/:id
-
-Contractors:
-GET    /api/kontrahent
-POST   /api/kontrahent
-PUT    /api/kontrahent/:id
-DELETE /api/kontrahent/:id
+# Backend tests
+cd backend-nestjs
+npm run test                # Unit tests
+npm run test:e2e           # API tests
+npm run test:load          # Performance tests
 ```
 
 ## 🚀 Deployment
 
-### **Docker Production Build**
+### Production Build
 
 ```bash
-# Build production images
+# Build all services
 docker-compose -f docker-compose.prod.yml build
 
-# Deploy to production
+# Deploy with health checks
 docker-compose -f docker-compose.prod.yml up -d
+
+# Monitor deployment
+docker-compose logs -f
 ```
 
-### **Environment-Specific Configurations**
+## 📝 Project Status
 
-- ✅ Development environment
-- ✅ Staging environment
-- ✅ Production environment
-- ✅ Environment variable management
+**Production Ready** - Core features implemented with enterprise standards:
 
-## 🤝 Contributing
-
-### **Development Workflow**
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### **Code Standards**
-
-- ✅ ESLint configuration
-- ✅ Prettier formatting
-- ✅ Conventional commits
-- ✅ Code review process
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- ✅ Complete microservices architecture
+- ✅ Frontend with modern React patterns
+- ✅ Event-driven communication
+- ✅ Comprehensive testing coverage
+- ✅ Production deployment configuration
+- 🔄 Advanced analytics dashboard
+- 🔄 Mobile application
+- 🔄 Third-party integrations (Stripe, AWS)
 
 ## 👨‍💻 Author
 
-**Konrad Tytus Gruca**
+**Full-Stack Developer Portfolio**
 
-- Senior Full-Stack Developer
-- Specialized in React, Node.js, and Enterprise Architecture
-- Expert in Modern JavaScript, TypeScript, and Cloud Technologies
+Demonstrating expertise in:
+
+- **Microservices Architecture** - Event-driven design
+- **Modern React Development** - Hooks, Context, Performance
+- **Enterprise Patterns** - SOLID, DDD, CQRS
+- **DevOps & Infrastructure** - Docker, Kafka, Monitoring
+- **Database Design** - PostgreSQL, MongoDB, Redis
 
 ---
 
-_This application demonstrates enterprise-level software development practices, modern architecture patterns, and scalable design principles suitable for production environments._
+_Enterprise-grade invoice management system showcasing production-ready microservices architecture, advanced React patterns, and scalable design principles._

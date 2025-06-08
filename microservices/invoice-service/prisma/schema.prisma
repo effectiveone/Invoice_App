@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Invoice {
+  id                String   @id @default(cuid())
+  invoiceNumber     String   @unique
+  issueDate         DateTime
+  dueDate           DateTime
+  sellDate          DateTime
+  paymentMethod     String
+  status            String   @default("draft")
+  
+  // Seller info
+  sellerName        String
+  sellerAddress     String
+  sellerNip         String
+  sellerRegon       String?
+  sellerKrs         String?
+  
+  // Buyer info
+  buyerName         String
+  buyerAddress      String
+  buyerNip          String?
+  buyerRegon        String?
+  buyerKrs          String?
+  
+  // Financial data
+  netAmount         Decimal  @db.Decimal(10, 2)
+  vatAmount         Decimal  @db.Decimal(10, 2)
+  grossAmount       Decimal  @db.Decimal(10, 2)
+  
+  // Additional info
+  notes             String?
+  paymentStatus     String   @default("unpaid")
+  
+  // Relations
+  items             InvoiceItem[]
+  
+  // Metadata
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  userId            String
+  
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  name        String
+  description String?
+  quantity    Decimal @db.Decimal(10, 3)
+  unit        String
+  netPrice    Decimal @db.Decimal(10, 2)
+  vatRate     Decimal @db.Decimal(5, 2)
+  netAmount   Decimal @db.Decimal(10, 2)
+  vatAmount   Decimal @db.Decimal(10, 2)
+  grossAmount Decimal @db.Decimal(10, 2)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("invoice_items")
+}
+
+model Product {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  unit        String
+  netPrice    Decimal @db.Decimal(10, 2)
+  vatRate     Decimal @db.Decimal(5, 2)
+  category    String?
+  isActive    Boolean @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  
+  @@map("products")
+}
+
+model Kontrahent {
+  id          String  @id @default(cuid())
+  name        String
+  address     String
+  nip         String?
+  regon       String?
+  krs         String?
+  email       String?
+  phone       String?
+  isActive    Boolean @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  
+  @@map("kontrahenci")
+}
